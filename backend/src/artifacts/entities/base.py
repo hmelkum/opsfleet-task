@@ -1,0 +1,12 @@
+from sqlalchemy import MetaData
+from sqlalchemy.ext.asyncio import AsyncAttrs
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
+
+from src.core.sqlalchemy.entities.base import NAMING_CONVENTION, _TablenameMixin
+
+
+class BaseArtifactsEntity(_TablenameMixin, AsyncAttrs, MappedAsDataclass, DeclarativeBase):
+    metadata = MetaData(
+        schema="artifacts",
+        naming_convention=NAMING_CONVENTION
+    )

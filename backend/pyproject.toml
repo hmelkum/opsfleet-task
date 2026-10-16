@@ -1,0 +1,49 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "OpsFleet data agent backend: gateway, artifacts and ecommerce modules"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg>=0.32.0",
+    "db-dtypes>=1.7.2",
+    "fastapi[standard]>=0.143.1",
+    "fastmcp>=4.1.0",
+    "google-cloud-bigquery>=3.46.1",
+    "httpx>=0.28.1",
+    "opentelemetry-api>=1.45.1",
+    "opentelemetry-exporter-otlp-proto-http>=1.45.1",
+    "opentelemetry-instrumentation-fastapi>=0.66b1",
+    "opentelemetry-sdk>=1.45.1",
+    "pandas>=3.0.6",
+    "pyarrow>=26.0.0",
+    "pydantic-settings>=2.16.0",
+    "requests>=2.34.2",
+    "sqlalchemy[asyncio]>=2.1.4",
+    "sqlglot>=30.23.0",
+]
+
+[dependency-groups]
+dev = [
+    "import-linter>=2.15",
+    "pytest>=9.1.1",
+]
+migrations = [
+    "alembic>=1.20.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.importlinter]
+root_package = "src"
+
+[[tool.importlinter.contracts]]
+name = "Backend modules never import each other"
+type = "independence"
+modules = ["src.gateway", "src.artifacts", "src.ecommerce"]
+
+[[tool.importlinter.contracts]]
+name = "Core does not depend on modules or app config"
+type = "forbidden"
+source_modules = ["src.core"]
+forbidden_modules = ["src.gateway", "src.artifacts", "src.ecommerce", "src.config"]

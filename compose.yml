@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16
+    ports:
+      - 5432:5432
+    # The container is created with the app's own settings, so the credentials are set once
+    environment:
+      - POSTGRES_USER=${POSTGRES__USERNAME}
+      - POSTGRES_PASSWORD=${POSTGRES__PASSWORD}
+      - POSTGRES_DB=${POSTGRES__DATABASE}
+    volumes:
+      - ${POSTGRES_VOLUME:-./volumes/postgres}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 60s
+
+  migration:
+    build:
+      context: backend
+      target: migration
+    env_file:
+      - .env
+    environment:
+      - POSTGRES__HOST=postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: backend
+      target: backend
+    env_file:
+      - .env
+    environment:
+      - POSTGRES__HOST=postgres
+      - AGENT_API__HOSTNAME=agent
+      # The Gemini key goes to the agent only
+      - GOOGLE_API_KEY=
+      # GCP credentials are mounted into the backend only
+      - GOOGLE_APPLICATION_CREDENTIALS=/gcloud/application_default_credentials.json
+    volumes:
+      - ${HOME}/.config/gcloud/application_default_credentials.json:/gcloud/application_default_credentials.json:ro
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    depends_on:
+      migration:
+        condition: service_completed_successfully
+
+  agent:
+    build:
+      context: agent
+    env_file:
+      - .env
+    environment:
+      - ECOMMERCE_MCP__HOSTNAME=backend
+      - ARTIFACTS_MCP__HOSTNAME=backend
+      # The database password goes to the backend only
+      - POSTGRES__PASSWORD=
+    ports:
+      - ${AGENT_PORT}:${AGENT_PORT}
+    depends_on:
+      backend:
+        condition: service_started

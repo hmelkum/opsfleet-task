@@ -1,0 +1,2 @@
+class SQLGuardError(ValueError):
+    pass

@@ -1,0 +1,33 @@
+# IDEs
+.vscode/
+
+# Virtual Environments
+venv
+.venv
+
+# Python
+__pycache__/
+
+# Caches
+.pytest_cache/
+.import_linter_cache/
+.ruff_cache/
+
+# Environment Variables
+.env
+!.env.example
+*.json.key
+
+# OS Specific
+.DS_Store
+
+# Examples
+example_projects/
+example_projects/**
+handoff/
+
+# Observability events
+logs/
+
+# Local Postgres data (runstr.sh bind mount)
+volumes/
