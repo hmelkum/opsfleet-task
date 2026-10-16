@@ -5,9 +5,9 @@ from pydantic import BaseModel
 
 class AgentConfigModel(BaseModel):
     # Per-turn budgets: resilience and cost caps
-    max_model_calls: int = 12
+    max_model_calls: int = 20
     # Counts every tool call, including several requested in one model turn
-    max_tool_calls: int = 10
+    max_tool_calls: int = 20
     model_retries: int = 2
 
 
