@@ -377,7 +377,7 @@ but none of these limits depends on it.
 
 **"Each user should only analyze data on products related to him."** The dataset has no link between
 an executive and products, so the prototype treats all executives as entitled to all products
-(assumption agreed for the prototype). The design supports per-user product scoping in the same layer
+(an assumption made for the prototype). The design supports per-user product scoping in the same layer
 that removes PII: an entitlements table (`user -> brand / department`) and a row filter in the
 `products` virtual table that scopes `order_items`, `orders` and `users` through it, passed as query
 parameters. In production this maps to BigQuery row-level access policies on the authorized views.
